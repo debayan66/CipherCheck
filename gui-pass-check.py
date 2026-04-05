@@ -6,9 +6,9 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.asymmetric import padding
-import secrets  # For salt
+import secrets  
 
-# Your original check function
+
 def check(password):
     strength = 0
     if len(password) >= 8: strength += 1
@@ -23,7 +23,7 @@ def check(password):
     else:
         return "WEAK"
 
-# Generate salt and hash password
+
 def hash_password(password):
     salt = secrets.token_bytes(16)
     kdf = PBKDF2HMAC(
@@ -33,11 +33,11 @@ def hash_password(password):
         iterations=100000,
     )
     key = kdf.derive(password.encode())
-    # Store salt + key for verification
+    
     stored = base64.b64encode(salt + key).decode('utf-8')
     return stored
 
-# Verify password against stored hash
+
 def verify_password(password, stored):
     salt_key = base64.b64decode(stored.encode('utf-8'))
     salt = salt_key[:16]
@@ -66,7 +66,7 @@ def analyze():
     result = check(pwd)
     messagebox.showinfo("Password Strength", f"Your password is: {result}")
     
-    # Hash and save
+  
     hashed = hash_password(pwd)
     with open("user_hash.txt", "w") as f:
         f.write(hashed)
