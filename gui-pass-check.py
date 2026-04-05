@@ -6,9 +6,7 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.asymmetric import padding
-import secrets  
-
-
+import secrets
 def check(password):
     strength = 0
     if len(password) >= 8: strength += 1
@@ -33,10 +31,9 @@ def hash_password(password):
         iterations=100000,
     )
     key = kdf.derive(password.encode())
-    
+    # Store salt + key for verification
     stored = base64.b64encode(salt + key).decode('utf-8')
     return stored
-
 
 def verify_password(password, stored):
     salt_key = base64.b64decode(stored.encode('utf-8'))
@@ -66,7 +63,7 @@ def analyze():
     result = check(pwd)
     messagebox.showinfo("Password Strength", f"Your password is: {result}")
     
-  
+    # Hash and save
     hashed = hash_password(pwd)
     with open("user_hash.txt", "w") as f:
         f.write(hashed)
@@ -86,7 +83,14 @@ def verify():
 
 root = tk.Tk()
 root.title("Password Strength Checker with Crypto")
-root.geometry("350x280")
+root.geometry("350x320")
+
+show_password_var = tk.BooleanVar(value=False)
+
+def toggle_password_visibility():
+    char = "" if show_password_var.get() else "*"
+    entry.config(show=char)
+    confirm_entry.config(show=char)
 
 tk.Label(root, text="Enter Password:", font=("Arial", 12)).pack(pady=5)
 entry = tk.Entry(root, show="*", width=25, font=("Arial", 12))
@@ -95,6 +99,8 @@ entry.pack()
 tk.Label(root, text="Confirm Password:", font=("Arial", 12)).pack(pady=5)
 confirm_entry = tk.Entry(root, show="*", width=25, font=("Arial", 12))
 confirm_entry.pack()
+
+tk.Checkbutton(root, text="Show password", variable=show_password_var, command=toggle_password_visibility, font=("Arial", 10)).pack(pady=5)
 
 btn = tk.Button(root, text="Check & Hash", command=analyze, font=("Arial", 12))
 btn.pack(pady=10)
