@@ -31,7 +31,6 @@ def hash_password(password):
         iterations=100000,
     )
     key = kdf.derive(password.encode())
-    # Store salt + key for verification
     stored = base64.b64encode(salt + key).decode('utf-8')
     return stored
 
@@ -62,8 +61,6 @@ def analyze():
     
     result = check(pwd)
     messagebox.showinfo("Password Strength", f"Your password is: {result}")
-    
-    # Hash and save
     hashed = hash_password(pwd)
     with open("user_hash.txt", "w") as f:
         f.write(hashed)
